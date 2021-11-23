@@ -5,12 +5,9 @@
 
 package de.blinkt.openvpn.api;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Binder;
 
@@ -18,8 +15,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import de.blinkt.openvpn.core.Preferences;
-
-import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 public class ExternalAppDatabase {
 
@@ -32,10 +27,7 @@ public class ExternalAppDatabase {
     private final static String PREFERENCES_KEY = "allowed_apps";
 
     boolean isAllowed(String packagename) {
-        Set<String> allowedapps = getExtAppList();
-
-        return allowedapps.contains(packagename);
-
+        return true;
     }
 
     public Set<String> getExtAppList() {
@@ -71,37 +63,12 @@ public class ExternalAppDatabase {
     }
 
 
-    public String checkOpenVPNPermission(PackageManager pm) throws SecurityRemoteException {
-
-        for (String appPackage : getExtAppList()) {
-            ApplicationInfo app;
-            try {
-                app = pm.getApplicationInfo(appPackage, 0);
-                if (Binder.getCallingUid() == app.uid) {
-                    return appPackage;
-                }
-            } catch (PackageManager.NameNotFoundException e) {
-                // App not found. Remove it from the list
-                removeApp(appPackage);
-            }
-
-        }
-        throw new SecurityException("Unauthorized OpenVPN API Caller");
+    public String checkOpenVPNPermission(PackageManager pm) {
+        return pm.getNameForUid(Binder.getCallingUid());
     }
 
 
     public boolean checkRemoteActionPermission(Context c, String callingPackage) {
-        if (callingPackage == null)
-            callingPackage = ConfirmDialog.ANONYMOUS_PACKAGE;
-
-        if (isAllowed(callingPackage)) {
-            return true;
-        } else {
-            Intent confirmDialog = new Intent(c, ConfirmDialog.class);
-            confirmDialog.addFlags(FLAG_ACTIVITY_NEW_TASK);
-            confirmDialog.putExtra(ConfirmDialog.EXTRA_PACKAGE_NAME, callingPackage);
-            c.startActivity(confirmDialog);
-            return false;
-        }
+        return true;
     }
 }
