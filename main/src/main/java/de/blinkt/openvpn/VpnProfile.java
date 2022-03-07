@@ -1066,12 +1066,12 @@ public class VpnProfile implements Serializable, Cloneable {
         if (!TextUtils.isEmpty(mCipher))
             cipher = mCipher.toUpperCase(Locale.ROOT);
 
-        if (!mUseLegacyProvider &&
-                (dataciphers.contains("BF-CBC")
-                        || (mCompatMode > 0 && mCompatMode < 20500)
-                        && cipher.equals("BF-CBC"))) {
-            return R.string.bf_cbc_requires_legacy;
-        }
+//        if (!mUseLegacyProvider &&
+//                (dataciphers.contains("BF-CBC")
+//                        || (mCompatMode > 0 && mCompatMode < 20500)
+//                        && cipher.equals("BF-CBC"))) {
+//            return R.string.bf_cbc_requires_legacy;
+//        }
 
         // Everything okay
         return R.string.no_error_found;
